@@ -1,58 +1,144 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Meu Primeiro Projeto Laravel — CRUD de Produtos
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplicação de estudo construída com **Laravel** para praticar o fluxo completo
+**rota → controller → model → banco → view**. Implementa um CRUD de produtos
+(criar, listar, editar e excluir) usando Eloquent, migrations e views Blade.
 
-## About Laravel
+## Tecnologias
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Laravel** (PHP 8.4)
+- **MySQL** (via WAMP)
+- **Blade** para as views
+- **Composer** para gerenciamento de dependências
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Pré-requisitos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Antes de rodar o projeto, você precisa ter instalado:
 
-## Learning Laravel
+- PHP 8.2 ou superior
+- Composer
+- Node.js (apenas se for compilar assets com `npm run dev`)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+> Confira a versão do PHP exigida no arquivo `composer.json`.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Como rodar o projeto
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 1. Clonar o repositório
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/PedroAnt06/Laravel-Php-MeuPrimeiroProjeto.git
+cd Laravel-Php-MeuPrimeiroProjeto
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Instalar as dependências
 
-## Contributing
+O Composer lê o `composer.json` e baixa o framework e todas as bibliotecas
+para a pasta `vendor/` (essa pasta NÃO vai para o repositório — é reconstruída
+por este comando).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+composer install
+```
 
-## Code of Conduct
+### 3. Configurar o ambiente
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Copie o arquivo de exemplo e gere a chave da aplicação:
 
-## Security Vulnerabilities
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 4. Configurar o banco de dados
 
-## License
+Crie um banco vazio no sqlite chamado `meu_primeiro_projeto`
+e ajuste as credenciais no arquivo `.env`:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```dotenv
+DB_CONNECTION=sqlite
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=meu_primeiro_projeto
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Após mexer no `.env`, limpe o cache de configuração para garantir que o Laravel
+leia os valores novos:
+
+```bash
+php artisan config:clear
+```
+
+### 5. Rodar as migrations
+
+As migrations criam as tabelas no banco (incluindo a tabela `produtos`):
+
+```bash
+php artisan migrate
+```
+
+### 6. Subir o servidor
+
+```bash
+php artisan serve
+```
+
+Acesse no navegador:
+
+```
+http://127.0.0.1:8000/produtos
+```
+
+## Estrutura principal
+
+| Caminho | Responsabilidade |
+|---|---|
+| `routes/web.php` | Define as rotas (mapa de URLs da aplicação) |
+| `app/Http/Controllers/ProdutoController.php` | Recebe as requisições e orquestra a lógica |
+| `app/Models/Produto.php` | Model Eloquent — representa e acessa a tabela `produtos` |
+| `database/migrations/` | Versionamento da estrutura do banco |
+| `resources/views/produtos/` | Views Blade (index, create, edit) |
+
+## Rotas do CRUD
+
+Geradas por uma única linha no `routes/web.php`:
+
+```php
+Route::resource('produtos', ProdutoController::class);
+```
+
+| Método HTTP | URL | Ação | Função |
+|---|---|---|---|
+| GET | `/produtos` | Listar | `index` |
+| GET | `/produtos/create` | Form de criar | `create` |
+| POST | `/produtos` | Salvar novo | `store` |
+| GET | `/produtos/{id}/edit` | Form de editar | `edit` |
+| PUT/PATCH | `/produtos/{id}` | Atualizar | `update` |
+| DELETE | `/produtos/{id}` | Excluir | `destroy` |
+
+Para ver todas as rotas registradas:
+
+```bash
+php artisan route:list
+```
+
+## Comandos úteis
+
+```bash
+php artisan migrate:status   # ver quais migrations já rodaram
+php artisan migrate:fresh    # apaga e recria todas as tabelas (zera o banco)
+php artisan tinker           # console interativo para testar o banco
+php artisan db:show          # mostra driver, banco e tabelas em uso
+php artisan test             # roda os testes automatizados
+```
+
+## Observações
+
+- A pasta `vendor/` e o arquivo `.env` **não** são versionados (estão no
+  `.gitignore`). O `.env` contém credenciais e nunca deve ir para o repositório.
+- Projeto desenvolvido para fins de estudo.
+
+## Autor
+
+**Pedro** — [@PedroAnt06](https://github.com/PedroAnt06)
